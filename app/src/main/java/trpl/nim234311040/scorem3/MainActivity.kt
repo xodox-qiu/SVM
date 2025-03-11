@@ -24,7 +24,9 @@ class MainActivity : ComponentActivity() {
 fun ScoreScreen(viewModel: ScoreViewModel = viewModel()) {
     val scoreRider by viewModel.scoreTeamRider.collectAsState()
     val scoreMonster by viewModel.scoreTeamMonster.collectAsState()
-    val gameScore by viewModel.gameScore.collectAsState()
+    val gameScoreRider by viewModel.gameScoreRider.collectAsState()
+    val gameScoreMonster by viewModel.gameScoreMonster.collectAsState()
+    val winnerMessage by viewModel.winnerMessage.collectAsState()
 
     Column(
         modifier = Modifier.fillMaxSize(),
@@ -34,14 +36,23 @@ fun ScoreScreen(viewModel: ScoreViewModel = viewModel()) {
         Text(text = "Killing Score", style = MaterialTheme.typography.headlineLarge)
 
         Spacer(modifier = Modifier.height(16.dp))
-        Text(text = "Game: $gameScore")
+        Text(text = "Game Score: $gameScoreRider - $gameScoreMonster")
 
         Spacer(modifier = Modifier.height(16.dp))
+
+        if (winnerMessage.isNotEmpty()) {
+            Text(
+                text = winnerMessage,
+                style = MaterialTheme.typography.headlineMedium,
+                color = MaterialTheme.colorScheme.primary
+            )
+            Spacer(modifier = Modifier.height(8.dp))
+        }
+
         Row(horizontalArrangement = Arrangement.SpaceEvenly, modifier = Modifier.fillMaxWidth()) {
             Column(horizontalAlignment = Alignment.CenterHorizontally) {
                 Text(text = "Team Rider", style = MaterialTheme.typography.headlineLarge)
                 Text(text = "$scoreRider", style = MaterialTheme.typography.headlineMedium)
-
 
                 Button(onClick = { viewModel.addPoint("Rider") }) {
                     Text(text = "1 Point")
@@ -65,8 +76,12 @@ fun ScoreScreen(viewModel: ScoreViewModel = viewModel()) {
         }
 
         Spacer(modifier = Modifier.height(16.dp))
-        Button(onClick = { viewModel.resetGame() }) {
-            Text(text = "Reset Game")
+
+        if (winnerMessage.isNotEmpty()) {
+            Button(onClick = { viewModel.resetGame() }) {
+                Text(text = "Reset Game")
+            }
         }
     }
 }
+
